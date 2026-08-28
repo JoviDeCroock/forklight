@@ -139,7 +139,7 @@ export function StagedPanel({ data }: { data: CanvasData }) {
             <p class="text-[12.5px] leading-snug text-ink-200">{proposal.rationale}</p>
 
             {assessment && (
-              <dl class="mt-2.5 grid grid-cols-3 gap-2 rounded-lg border border-amber-500/15 bg-ink-950/40 p-2">
+              <dl class="mt-2.5 grid grid-cols-3 gap-x-3 gap-y-2 rounded-lg border border-amber-500/15 bg-ink-950/40 p-2">
                 <div>
                   <dt class="fl-eyebrow text-ink-500">recovery</dt>
                   <dd class="fl-nums mt-1 font-mono text-[12.5px] text-emerald-300">

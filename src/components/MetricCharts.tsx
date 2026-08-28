@@ -12,6 +12,16 @@ const MINI = { w: 300, h: 56, top: 7, right: 8, bottom: 9, left: 8 };
 
 const OBSERVED = "#cbd5e1";
 
+// The seeded labels are written for prose; a small-multiple tile has room for
+// about fifteen characters before it starts truncating. The full label still
+// reaches assistive tech through the chart's aria-label.
+const TILE_LABELS: Record<string, string> = {
+  checkout_p95_ms: "p95 latency",
+  cache_hit_ratio: "Cache hit ratio",
+  orders_per_min: "Orders",
+  db_cpu: "Pricing DB CPU",
+};
+
 interface Scale {
   xOf: (minute: number) => number;
   yOf: (value: number) => number;
@@ -147,7 +157,7 @@ function Marks({
             y={top + 9}
             fill="#f59e0b"
             fill-opacity="0.9"
-            font-size="10"
+            font-size="11"
             font-family="var(--font-mono)"
           >
             14:05 deploy v8.3.1
@@ -157,7 +167,7 @@ function Marks({
             y={top + 9}
             text-anchor="end"
             fill="#9dabc0"
-            font-size="10"
+            font-size="11"
             font-family="var(--font-mono)"
           >
             now
@@ -167,7 +177,7 @@ function Marks({
             y={top + 9}
             text-anchor="middle"
             fill="#8794a8"
-            font-size="9"
+            font-size="10"
             letter-spacing="1.4"
             font-family="var(--font-mono)"
           >
@@ -254,7 +264,7 @@ function HeroChart({
               y={s.yOf(tick) + 3}
               text-anchor="end"
               fill="#8794a8"
-              font-size="10"
+              font-size="11"
               font-family="var(--font-mono)"
             >
               {Number.isInteger(tick) ? tick : formatValue(tick, chart.unit)}
@@ -281,7 +291,7 @@ function HeroChart({
               y={s.yOf(1) - 5}
               fill="#34d399"
               fill-opacity="0.85"
-              font-size="10"
+              font-size="11"
               font-family="var(--font-mono)"
             >
               SLO 1%
@@ -329,7 +339,7 @@ function HeroChart({
           x={box.left}
           y={box.h - 7}
           fill="#8794a8"
-          font-size="10"
+          font-size="11"
           font-family="var(--font-mono)"
         >
           {chart.observed[0]?.clock}
@@ -339,7 +349,7 @@ function HeroChart({
           y={box.h - 7}
           text-anchor="end"
           fill="#8794a8"
-          font-size="10"
+          font-size="11"
           font-family="var(--font-mono)"
         >
           15:05 horizon
@@ -395,7 +405,9 @@ function MiniChart({
       data-testid={`chart-${chart.id}`}
     >
       <div class="mb-0.5 flex items-baseline justify-between gap-2">
-        <span class="min-w-0 truncate text-[12px] font-medium text-ink-300">{chart.label}</span>
+        <span class="min-w-0 truncate text-[12px] font-medium text-ink-300" title={chart.label}>
+          {TILE_LABELS[chart.id] ?? chart.label}
+        </span>
         <span class="flex shrink-0 items-baseline gap-1.5">
           <span class="fl-nums hidden font-mono text-[9.5px] text-ink-500 2xl:inline">
             was {formatValue(chart.preIncident, chart.unit)}
@@ -462,7 +474,7 @@ export function MetricCharts({ data }: { data: CanvasData }) {
 
       {hero && <HeroChart chart={hero} forkIds={forkIds} clockMinute={data.clockMinute} />}
 
-      <div class="mt-2.5 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="mt-2.5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         {rest.map((chart) => (
           <MiniChart
             key={chart.id}

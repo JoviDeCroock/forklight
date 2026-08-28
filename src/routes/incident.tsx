@@ -29,15 +29,17 @@ export function Component({ data }: RouteComponentProps<typeof loader>) {
     >
       <TopBar incident={data.incident} clock={data.clock} />
 
-      <main class="mt-3.5 grid flex-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px]">
-        <div class="flex min-w-0 flex-col gap-3.5 lg:min-h-[calc(100vh-9.5rem)]">
+      {/* Split into canvas + rail only from 1280 up: below that the charts need
+          the full width more than the rail needs to be beside them. */}
+      <main class="mt-3.5 grid flex-1 items-start gap-3.5 xl:grid-cols-[minmax(0,1fr)_368px] 2xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div class="flex min-w-0 flex-col gap-3.5 xl:min-h-[calc(100vh-9.5rem)]">
           <MetricCharts data={data} />
           <IncidentTimeline data={data} />
           <ScenarioTree data={data} focused={focused} onFocus={setFocused} />
         </div>
         {/* Not sticky on purpose: `position: sticky` creates a stacking context,
             which would trap the apply-confirmation modal below the top bar. */}
-        <div class="flex min-w-0 flex-col gap-3.5 lg:h-[calc(100vh-9.5rem)]">
+        <div class="flex min-w-0 flex-col gap-3.5 xl:h-[calc(100vh-9.5rem)]">
           <StagedPanel data={data} />
           <LedgerFeed entries={data.ledger} />
         </div>
