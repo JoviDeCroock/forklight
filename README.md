@@ -14,7 +14,7 @@ The page has a **Copy demo prompt** button for exactly this. Paste it into an ag
 
 ## Try it
 
-**Live: `https://forklight.decroockjovi.workers.dev`** — TODO: replace with the deployed URL before submitting.
+**Live: [forklight.decroockjovi.workers.dev](https://forklight.decroockjovi.workers.dev)**
 
 How you reach the tools depends on the browser:
 
@@ -140,7 +140,14 @@ Other scripts: `pnpm build`, `pnpm preview`, `pnpm typecheck`, `pnpm deploy` (bu
 
 ## Testing
 
-Three layers, each aimed at a different failure. **TODO-verify: exact commands are being finalised alongside the test suite.**
+Three layers, each aimed at a different failure:
+
+```sh
+pnpm test           # vitest — engine determinism + capability pipeline
+pnpm run eval       # pracht eval — JSON scenarios over the HTTP projection
+pnpm run test:e2e   # playwright — real Chrome, real WebMCP page tools
+pnpm run verify     # typecheck, then all three
+```
 
 - **Playwright against real Chrome.** Launched with `--enable-features=WebMCPTesting` and driven through `navigator.modelContextTesting`, so the tools under test are the ones a real host would see, not a mock. Covers registration (the six tools present, `mitigation.apply` absent), tool execution mutating the visible DOM, the focus-follow lifecycle of `scenario_tune`, request cancellation, session isolation between browser contexts, and reset.
 - **Vitest.** Determinism of the incident engine — the same inputs must produce the same series and the same comparison ranking — plus capability pipeline behaviour through pracht's test host: schema rejection, middleware refusal without a session, and the destructive 409-then-confirm flow.
