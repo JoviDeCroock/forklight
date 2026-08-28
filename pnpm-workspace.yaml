@@ -3,6 +3,7 @@ packages:
 allowBuilds:
   "@tailwindcss/oxide": true
   "esbuild": true
+  ffmpeg-static: true
   "workerd": true
 minimumReleaseAgeExclude:
   - '@pracht/adapter-cloudflare@0.7.2'

@@ -8,3 +8,7 @@ node_modules
 .dev.vars
 # Keep .pracht/app-graph.json committed — it is the `pracht plan` snapshot.
 media/
+
+# Playwright
+test-results
+playwright-report
