@@ -38,18 +38,36 @@ export function sessionIdFrom(request: Request): string | null {
   return match ? match[1] : null;
 }
 
+/** A session untouched this long greets its next visit with the pristine
+ * incident again. Long enough to survive any real demo run (the agent's
+ * longest flows write every few seconds); short enough that "launching" the
+ * page later never opens mid-story. */
+const IDLE_RESET_MINUTES = 45;
+
 export async function loadState(db: D1Database, sessionId: string): Promise<SessionState> {
   const row = await db
-    .prepare("SELECT state FROM sessions WHERE id = ?1")
+    .prepare(
+      "SELECT state, (julianday('now') - julianday(updated_at)) * 1440 AS idleMinutes FROM sessions WHERE id = ?1",
+    )
     .bind(sessionId)
-    .first<{ state: string }>();
+    .first<{ state: string; idleMinutes: number }>();
   if (row) {
     const parsed = JSON.parse(row.state) as SessionState;
-    if (parsed.version === STATE_VERSION) return parsed;
-    // The stored shape predates a catalog or schema change — reseed rather
-    // than crash on ids that no longer exist. The ledger references the old
-    // names, so it goes too.
-    return resetSession(db, sessionId);
+    // Reseed on either a stale shape (catalog ids that no longer exist) or a
+    // long-idle session — a relaunch gets a fresh incident, while reloads and
+    // an agent mid-run resume seamlessly. The old ledger goes with it.
+    if (parsed.version !== STATE_VERSION || row.idleMinutes > IDLE_RESET_MINUTES) {
+      return resetSession(db, sessionId);
+    }
+    if (row.idleMinutes > 5) {
+      // Keep "idle" meaning time since the last interaction of any kind,
+      // without paying a write on every read.
+      await db
+        .prepare("UPDATE sessions SET updated_at = datetime('now') WHERE id = ?1")
+        .bind(sessionId)
+        .run();
+    }
+    return parsed;
   }
   const state = seedState();
   await db

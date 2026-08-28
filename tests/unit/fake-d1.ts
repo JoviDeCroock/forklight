@@ -49,9 +49,11 @@ class FakeStatement {
 
   async first<T = Record<string, unknown>>(): Promise<T | null> {
     const sql = normalize(this.sql);
-    if (sql.startsWith("select state from sessions where id =")) {
+    if (sql.startsWith("select state,") && sql.includes("from sessions where id =")) {
       const state = this.store.sessions.get(String(this.values[0]));
-      return state === undefined ? null : ({ state } as T);
+      // The fake has no clock; sessions never read as idle here. The idle
+      // expiry itself is covered by the store's SQL and the e2e reset test.
+      return state === undefined ? null : ({ state, idleMinutes: 0 } as T);
     }
     throw new Error(`fake D1: unhandled first() statement: ${this.sql}`);
   }
