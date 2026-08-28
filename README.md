@@ -19,7 +19,7 @@ The page has a **Copy demo prompt** button for exactly this. Paste it into an ag
 How you reach the tools depends on the browser:
 
 - **ChatGPT desktop's built-in browser** — works with no setup. The browser enables WebMCP itself, so opening the page registers the tools and the side panel can call them.
-- **Stable Chrome 150–156** — WebMCP is behind an origin trial that runs 149 to 156, though pracht targets the `document.modelContext` shape that landed in 150. The deployed page must carry a trial token for its origin: set `PRACHT_PUBLIC_WEBMCP_OT_TOKEN` in the Worker environment and the shell emits the `origin-trial` meta tag (see `src/shells/app.tsx`).
+- **Stable Chrome 150–156** — WebMCP is behind an origin trial that runs 149 to 156, though pracht targets the `document.modelContext` shape that landed in 150. The deployed page must carry a trial token for its origin: put `PRACHT_PUBLIC_WEBMCP_OT_TOKEN` in `.env` before building (it is baked into the HTML, not read at runtime) and the shell emits the `origin-trial` meta tag (see `src/shells/app.tsx` and `.env.example`).
 - **Any local Chrome** — skip the token and launch with the testing flag:
 
   ```
