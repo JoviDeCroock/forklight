@@ -1,0 +1,13 @@
+packages:
+  - "."
+allowBuilds:
+  "@tailwindcss/oxide": true
+  "esbuild": true
+  "workerd": true
+minimumReleaseAgeExclude:
+  - '@pracht/adapter-cloudflare@0.7.2'
+  - '@pracht/adapter-node@0.4.2'
+  - '@pracht/capabilities@0.3.0'
+  - '@pracht/cli@1.12.0'
+  - '@pracht/core@0.16.0'
+  - '@pracht/vite-plugin@0.11.0'

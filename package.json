@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@pracht/adapter-cloudflare": "^0.7.2",
+    "@pracht/core": "^0.16.0"
+  },
+  "devDependencies": {
+    "@pracht/cli": "^1.12.0",
+    "@pracht/vite-plugin": "^0.11.0",
+    "preact": "^10.26.9",
+    "preact-render-to-string": "^6.5.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.0",
+    "wrangler": "^4.81.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "name": "forklight",
+  "private": true,
+  "scripts": {
+    "build": "pracht build",
+    "dev": "pracht dev",
+    "typecheck": "tsc --noEmit",
+    "deploy": "pracht build && wrangler deploy",
+    "preview": "pracht preview"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}
