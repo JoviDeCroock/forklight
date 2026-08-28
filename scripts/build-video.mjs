@@ -330,6 +330,8 @@ const wrap = (text, width = 78) => {
 };
 
 const segments = [];
+const cues = [];
+let cursorSeconds = 0;
 for (let i = 0; i < BEATS.length; i++) {
   const beat = BEATS[i];
   const start = marks.find((m) => m.id === beat.id).at;
@@ -352,6 +354,8 @@ for (let i = 0; i < BEATS.length; i++) {
       seg,
     ]);
     segments.push(seg);
+    cues.push({ start: cursorSeconds, end: cursorSeconds + sliceDur, text: SHORT_CAPTIONS[beat.id] });
+    cursorSeconds += sliceDur;
     console.log(`${beat.id}: ${sliceDur.toFixed(1)}s`);
     continue;
   }
@@ -375,6 +379,8 @@ for (let i = 0; i < BEATS.length; i++) {
     seg,
   ]);
   segments.push(seg);
+  cues.push({ start: cursorSeconds, end: cursorSeconds + target, text: CAPTIONS[beat.id] });
+  cursorSeconds += target;
   console.log(`${beat.id}: slice ${sliceDur.toFixed(1)}s, vo ${voDur.toFixed(1)}s → ${target.toFixed(1)}s`);
 }
 
@@ -385,4 +391,15 @@ run(["-y", "-f", "concat", "-safe", "0", "-i", "media/build/concat.txt", "-c", "
 if (!SILENT) {
   run(["-y", "-i", OUT, "-an", "-c:v", "copy", "media/forklight-submission-silent.mp4"]);
 }
-console.log(`done: ${OUT} (${durationOf(OUT).toFixed(1)}s)`);
+const srtTime = (t) => {
+  const ms = Math.round(t * 1000);
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60;
+  const sec = Math.floor(ms / 1000) % 60, rest = ms % 1000;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")},${String(rest).padStart(3, "0")}`;
+};
+const srt = cues
+  .map((c, i) => `${i + 1}\n${srtTime(c.start)} --> ${srtTime(Math.max(c.start + 0.5, c.end - 0.15))}\n${wrap(c.text, 60)}\n`)
+  .join("\n");
+const SRT_OUT = OUT.replace(/\.mp4$/, ".srt");
+writeFileSync(SRT_OUT, srt);
+console.log(`done: ${OUT} (${durationOf(OUT).toFixed(1)}s) + ${SRT_OUT}`);
