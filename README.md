@@ -136,7 +136,7 @@ Open it in a Chrome launched with `--enable-features=WebMCPTesting` to get the p
 
 Other scripts: `pnpm build`, `pnpm preview`, `pnpm typecheck`, `pnpm deploy` (build plus `wrangler deploy`). `pracht verify` loads every capability module into the app graph, so an exposure mistake — a destructive capability reaching an agent transport, a missing confirmation secret — fails there rather than in production.
 
-**Deploying:** `PRACHT_CONFIRMATION_SECRET` must exist in the Worker's real environment, not only in `.dev.vars`. Set it with `wrangler secret put PRACHT_CONFIRMATION_SECRET`. Without it, `mitigation.apply` fails closed and the Apply button in the page reports that it could not prepare the call.
+**Deploying:** `PRACHT_CONFIRMATION_SECRET` must exist in the Worker's real environment, not only in `.dev.vars`. Set it with `wrangler secret put PRACHT_CONFIRMATION_SECRET`. For stable-Chrome visitors, put a WebMCP origin-trial token for your origin in `.env` as `PRACHT_PUBLIC_WEBMCP_OT_TOKEN` (see `.env.example`) before building — it is baked into the HTML at build time. The deployed site currently carries a structurally-valid placeholder, so the wiring is proven but the trial only activates once a real signed token replaces it. Without it, `mitigation.apply` fails closed and the Apply button in the page reports that it could not prepare the call.
 
 ## Testing
 
