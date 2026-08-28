@@ -51,11 +51,20 @@ jobs:
       - name: Agent-task evals
         run: pnpm run eval
 
-      - name: Install Chrome for Playwright
-        run: pnpm exec playwright install --with-deps chrome
+      # Pinned to Chrome 151: 152 removed the navigator.modelContextTesting
+      # automation hook these tests drive (the page API itself remains on
+      # document.modelContext). Bump deliberately once a replacement hook ships.
+      - name: Install Chrome 151 for Playwright
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 151
+          install-dependencies: true
 
       - name: End-to-end (real Chrome + WebMCP)
         run: pnpm run test:e2e
+        env:
+          CHROME_EXECUTABLE_PATH: ${{ steps.chrome.outputs.chrome-path }}
 
       - name: Upload Playwright traces
         if: failure()

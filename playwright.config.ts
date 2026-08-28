@@ -22,8 +22,16 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: "retain-on-failure",
     ...devices["Desktop Chrome"],
-    channel: "chrome",
-    launchOptions: { args: ["--enable-features=WebMCPTesting"] },
+    // CI pins Chrome 151 via an explicit executable (152 removed the
+    // modelContextTesting automation hook); locally the installed Chrome is
+    // used through the channel.
+    ...(process.env.CHROME_EXECUTABLE_PATH ? {} : { channel: "chrome" as const }),
+    launchOptions: {
+      args: ["--enable-features=WebMCPTesting"],
+      ...(process.env.CHROME_EXECUTABLE_PATH
+        ? { executablePath: process.env.CHROME_EXECUTABLE_PATH }
+        : {}),
+    },
   },
   webServer: {
     // `pracht preview` builds, then serves the production build on workerd
