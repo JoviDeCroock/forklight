@@ -1,6 +1,6 @@
 {
   "name": "incident investigation flow",
-  "task": "Orient on INC-2107, pull evidence, fork a counterfactual, simulate the bypass, compare, and stage the result for a human — the whole demo prompt, over the HTTP projection.",
+  "task": "Orient on INC-2107, pull evidence, fork competing counterfactuals, simulate bypass and rollback, compare them, and stage the recommended result for a human — the whole demo prompt, over the HTTP projection.",
   "steps": [
     {
       "capability": "incident.reset",
@@ -61,24 +61,23 @@
       }
     },
     {
-      "capability": "scenario.compare",
-      "input": { "scenarios": ["$steps[3].data.scenario.id"] },
+      "capability": "scenario.fork",
+      "input": {
+        "name": "Rollback deployment",
+        "hypothesis": "Returning web to v8.3.0 stops the regression with a smaller blast radius"
+      },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
         "ok": true,
         "status": 200,
-        "output": {
-          "result": "ok",
-          "recommendation": { "scenarioId": "s-1", "name": "Bypass response cache" }
-        }
+        "output": { "result": "ok", "scenario": { "id": "s-2", "parent": "main", "actions": [] } }
       }
     },
     {
-      "capability": "mitigation.stage",
+      "capability": "scenario.simulate",
       "input": {
-        "scenario": "$steps[3].data.scenario.id",
-        "rationale": "Recovers in ~4 minutes with a moderate, reversible blast radius; rollback is slower and loses the feature.",
-        "evidence": ["web_error_rate 14:05-14:32", "edge-cache key fragmentation warnings"]
+        "scenario": "$steps[5].data.scenario.id",
+        "mitigation": "rollback_deploy"
       },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
@@ -86,7 +85,39 @@
         "status": 200,
         "output": {
           "result": "ok",
-          "staged": { "mitigation": "bypass_response_cache", "status": "staged", "stagedVia": "http" }
+          "assessment": { "confidence": 0.92, "blastRadius": { "level": "low" } }
+        }
+      }
+    },
+    {
+      "capability": "scenario.compare",
+      "input": {
+        "scenarios": ["$steps[3].data.scenario.id", "$steps[5].data.scenario.id"]
+      },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "recommendation": { "scenarioId": "s-2", "name": "Rollback deployment" }
+        }
+      }
+    },
+    {
+      "capability": "mitigation.stage",
+      "input": {
+        "scenario": "$steps[5].data.scenario.id",
+        "rationale": "The comparator ranks rollback first on confidence and blast radius; it is slower than bypass but remains reversible and avoids shifting cache load to the primary database.",
+        "evidence": ["web_error_rate 14:05-14:32", "v8.3.1 response-cache key fragmentation warnings"]
+      },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "staged": { "mitigation": "rollback_deploy", "status": "staged", "stagedVia": "http" }
         }
       }
     },
