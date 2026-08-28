@@ -22,7 +22,7 @@ test("an agent's tool calls move the canvas the human is looking at", async ({ c
 
   const proposal = page.getByTestId(`proposal-${proposalId}`);
   await expect(proposal).toBeVisible();
-  await expect(proposal).toContainText("staged via agent (WebMCP)");
+  await expect(proposal).toContainText("staged by agent");
   await expect(proposal).toContainText("Bypass the new response cache");
   // The human-only switch is on the proposal, not on the tool surface.
   await expect(page.getByTestId(`apply-${proposalId}`)).toBeVisible();
