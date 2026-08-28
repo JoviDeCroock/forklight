@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Demo-only secret. It gates the destructive prepare/commit flow; the worker
+  # reads it from .dev.vars (wrangler does not forward process.env), so the
+  # setup step below writes it there as well.
+  PRACHT_CONFIRMATION_SECRET: ci-forklight-confirmation-secret
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Provide the worker's confirmation secret
+        run: echo "PRACHT_CONFIRMATION_SECRET=$PRACHT_CONFIRMATION_SECRET" > .dev.vars
+
+      - name: Apply D1 migrations to the local state
+        run: pnpm run db:migrate
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Unit tests
+        run: pnpm run test
+
+      - name: Agent-task evals
+        run: pnpm run eval
+
+      - name: Install Chrome for Playwright
+        run: pnpm exec playwright install --with-deps chrome
+
+      - name: End-to-end (real Chrome + WebMCP)
+        run: pnpm run test:e2e
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
