@@ -95,3 +95,17 @@ Three 15–30s cuts from the main video, each usable standalone with captions bu
 1. **"Watch the canvas fork itself"** — 0:26–0:55. Prompt already sent, hands off the keyboard. Branch cards appear, dashed forecasts fan across the charts, ledger fills with agent rows. Caption: *nobody is touching this page*. Best clip for the thread's post 4.
 2. **"The missing tool"** — 1:57–2:14. The host's tool list, then the cut to `effect: "destructive"` in the editor. Caption: *six tools. no apply.* Strongest standalone; use it on post 1 and the launch tweet.
 3. **"Focus-follow"** — 2:14–2:20, extended with the b-roll capture to about 15s. Click a branch, the `scenario_tune` chip retargets, click another, it retargets again. Caption: *my click picks the target, the agent picks the action*. Niche but the WebMCP crowd will get it immediately.
+
+## Alt text for attached media
+
+**Video (forklight-quick.mp4 / forklight-submission.mp4):**
+
+> Screen recording of Forklight, a dark incident-response dashboard showing a production outage: an error-rate chart spiking after a 14:05 deploy. A cursor copies a demo prompt, then an AI agent takes over hands-free: two counterfactual scenario cards appear ("Bypass response cache", "Roll back v8.3.1"), dashed forecast lines land on every chart, a log view highlights a prompt-injection attempt in a user-agent string, and a proposal card is staged with rationale and evidence. A human clicks "Apply to production", confirms in a dialog, and the charts recover; the status chip turns green. An activity ledger lists every call, labelled agent or you. A final panel lists the agent's six tools, with "mitigation.apply — destructive: never projected to WebMCP" shown as absent.
+
+**Still (still-mid.png):**
+
+> Dark ops dashboard mid-incident: a large error-rate chart at 18.3% with two dashed recovery forecasts, an observed-record timeline with deploy and alert markers, two scenario cards comparing recovery time, confidence and blast radius, an amber "staged for review" proposal with evidence chips and a green "Apply to production" button, and an activity ledger of agent tool calls.
+
+**Still (still-recovered.png):**
+
+> The same dashboard after the fix: status chip reads "recovered", error rate at 0.2% with the spike collapsed, the clock advanced to 14:42, a green applied-mitigation card, and a ledger topped by a human "mitigation.apply — APPLIED" entry above the agent's earlier calls.
