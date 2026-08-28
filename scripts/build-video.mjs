@@ -4,14 +4,21 @@
 // over media/vo/*.aiff to replace it), burns captions, and concatenates with
 // an end card. Deterministic app + scripted capture = reproducible takes.
 //
-// Usage: node scripts/build-video.mjs [url]
-// Output: media/forklight-submission.mp4 (+ media/forklight-submission-silent.mp4)
+// Usage: node scripts/build-video.mjs [url] [--silent]
+// Output: media/forklight-submission.mp4 (+ -silent audio-strip), or with
+// --silent a faster narration-free cut with headline captions:
+// media/forklight-quick.mp4
 import { chromium } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import ffmpeg from "ffmpeg-static";
 
-const url = process.argv[2] ?? "https://forklight.decroockjovi.workers.dev/";
+const SILENT = process.argv.includes("--silent");
+const url = process.argv.filter((a) => !a.startsWith("--"))[2] ?? "https://forklight.decroockjovi.workers.dev/";
+// Silent cut runs ~25% faster on actions and holds overlays about half as
+// long — nothing waits for a narrator.
+const ACTION = SILENT ? 0.75 : 1;
+const HOLD = SILENT ? 0.55 : 1;
 const VOICE = "Samantha";
 const RATE = 176;
 const W = 1600, H = 1000;
@@ -51,6 +58,21 @@ const BEATS = [
 ];
 const CAPTIONS = Object.fromEntries(BEATS.map((b) => [b.id, b.vo
   .replaceAll(" A P I", " api").replaceAll("U I, H T T P", "UI, HTTP")]));
+const SHORT_CAPTIONS = {
+  b01: "A production outage — errors went vertical at 14:05, right after a deploy.",
+  b02: "Four possible mitigations. Which one is actually safe?",
+  b03: "Hand it to the agent — one prompt.",
+  b04: "It forks counterfactual timelines. The canvas updates live — hands off.",
+  b05: "It reads the logs — and treats the prompt injection as data. untrustedContentHint.",
+  b06: "It compares the branches: recovery time, blast radius, confidence.",
+  b07: "Stages the safest option, with evidence. Then it stops.",
+  b08: "Applying to production is human-only.",
+  b09: "One confirmation — recovered.",
+  b10: "One ledger. Agent calls, human calls, one typed contract.",
+  b11: "There is no apply tool. Destructive operations are never projected to WebMCP.",
+  b12: "The whole enforcement is one line of code.",
+  b13: "Focus a branch — the agent's tool follows your click.",
+};
 
 // --- phase 1: record the master session with beat marks ----------------------
 console.log("recording master session…");
@@ -69,7 +91,8 @@ const page = await context.newPage();
 const t0 = Date.now();
 const marks = [];
 const mark = (id) => marks.push({ id, at: (Date.now() - t0) / 1000 });
-const sleep = (ms) => page.waitForTimeout(ms);
+const sleep = (ms) => page.waitForTimeout(ms * ACTION);
+const hold = (ms) => page.waitForTimeout(ms * HOLD);
 
 const exec = async (name, input) => {
   const raw = await page.evaluate(
@@ -161,7 +184,7 @@ await overlay(
   `<div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7dd3fc;margin-bottom:14px">handed to the agent</div>` +
   `<div style="font-size:24px;line-height:1.55;color:#e2e8f0">${prompt}</div>`,
 );
-await sleep(3600);
+await hold(3600);
 await hideOverlay();
 await hideCursor();
 
@@ -191,7 +214,7 @@ await overlay(
     return `<div style="font-size:14.5px;line-height:1.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${hot ? "#fbbf24" : l.includes("ERROR") ? "#fda4af" : "#94a3b8"};${hot ? "background:rgba(251,191,36,0.12);border-radius:6px;padding:2px 8px;margin:2px -8px" : ""}">${l.replace(/</g, "&lt;")}</div>`;
   }).join(""),
 );
-await sleep(6200);
+await hold(6200);
 await hideOverlay();
 
 // b06 — compare; hover both branch cards.
@@ -247,7 +270,7 @@ await overlay(
   tools.map((t) => `<div style="font-size:19px;line-height:1.9;color:#e2e8f0">✓ ${t}</div>`).join("") +
   `<div style="font-size:19px;line-height:1.9;color:#64748b;border-top:1px solid rgba(148,163,184,0.2);margin-top:10px;padding-top:10px">✗ mitigation.apply <span style="color:#a78bfa">— destructive: never projected to WebMCP</span></div>`,
 );
-await sleep(6000);
+await hold(6000);
 await hideOverlay();
 
 // b12 — the enforcement, as code (the actual definitions).
@@ -264,7 +287,7 @@ await overlay(
   `<pre style="font-size:17px;line-height:1.8;color:#94a3b8;margin:0">  effect: "write",
   <span style="color:#6ee7b7">expose: { http: true, webmcp: true },</span></pre>`,
 );
-await sleep(6500);
+await hold(6500);
 await hideOverlay();
 
 // b13 — focus-follow, then end card.
@@ -283,7 +306,7 @@ await overlay(
      <div style="font-size:16px;color:#64748b;margin-top:6px">github.com/JoviDeCroock/forklight · built with pracht</div>
    </div>`,
 );
-await sleep(3500);
+await hold(3500);
 mark("end");
 
 await context.close();
@@ -313,23 +336,37 @@ for (let i = 0; i < BEATS.length; i++) {
   const next = marks[marks.findIndex((m) => m.id === beat.id) + 1].at;
   const sliceDur = next - start;
 
+  const captionFile = `media/build/${beat.id}.txt`;
+  const seg = `media/build/seg/${beat.id}.mp4`;
+  const drawtext =
+    `drawtext=fontfile=${FONT}:textfile=${captionFile}:fontsize=${SILENT ? 30 : 27}:fontcolor=white:line_spacing=8:` +
+    `x=(w-text_w)/2:y=h-th-42:box=1:boxcolor=black@0.55:boxborderw=14`;
+
+  if (SILENT) {
+    writeFileSync(captionFile, wrap(SHORT_CAPTIONS[beat.id]));
+    run([
+      "-y",
+      "-ss", start.toFixed(2), "-t", sliceDur.toFixed(2), "-i", "media/build/master.mp4",
+      "-vf", drawtext, "-an",
+      "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p",
+      seg,
+    ]);
+    segments.push(seg);
+    console.log(`${beat.id}: ${sliceDur.toFixed(1)}s`);
+    continue;
+  }
+
   const aiff = `media/vo/${beat.id}.aiff`;
   execFileSync("say", ["-v", VOICE, "-r", String(RATE), "-o", aiff, beat.vo]);
   const voDur = durationOf(aiff);
   const target = Math.max(sliceDur, voDur + 0.5);
-
-  const captionFile = `media/build/${beat.id}.txt`;
   writeFileSync(captionFile, wrap(CAPTIONS[beat.id]));
-
-  const seg = `media/build/seg/${beat.id}.mp4`;
   run([
     "-y",
     "-ss", start.toFixed(2), "-t", sliceDur.toFixed(2), "-i", "media/build/master.mp4",
     "-i", aiff,
     "-filter_complex",
-    `[0:v]tpad=stop_mode=clone:stop_duration=${Math.max(0, target - sliceDur).toFixed(2)},` +
-    `drawtext=fontfile=${FONT}:textfile=${captionFile}:fontsize=27:fontcolor=white:line_spacing=8:` +
-    `x=(w-text_w)/2:y=h-th-42:box=1:boxcolor=black@0.55:boxborderw=14[v];` +
+    `[0:v]tpad=stop_mode=clone:stop_duration=${Math.max(0, target - sliceDur).toFixed(2)},${drawtext}[v];` +
     `[1:a]apad[a]`,
     "-map", "[v]", "-map", "[a]",
     "-t", target.toFixed(2),
@@ -342,7 +379,10 @@ for (let i = 0; i < BEATS.length; i++) {
 }
 
 // --- phase 3: concat ---------------------------------------------------------
+const OUT = SILENT ? "media/forklight-quick.mp4" : "media/forklight-submission.mp4";
 writeFileSync("media/build/concat.txt", segments.map((s) => `file '${s.replace("media/build/", "")}'`).join("\n"));
-run(["-y", "-f", "concat", "-safe", "0", "-i", "media/build/concat.txt", "-c", "copy", "media/forklight-submission.mp4"], { cwd: process.cwd() });
-run(["-y", "-i", "media/forklight-submission.mp4", "-an", "-c:v", "copy", "media/forklight-submission-silent.mp4"]);
-console.log(`done: media/forklight-submission.mp4 (${durationOf("media/forklight-submission.mp4").toFixed(1)}s)`);
+run(["-y", "-f", "concat", "-safe", "0", "-i", "media/build/concat.txt", "-c", "copy", OUT], { cwd: process.cwd() });
+if (!SILENT) {
+  run(["-y", "-i", OUT, "-an", "-c:v", "copy", "media/forklight-submission-silent.mp4"]);
+}
+console.log(`done: ${OUT} (${durationOf(OUT).toFixed(1)}s)`);
