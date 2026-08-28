@@ -1,0 +1,104 @@
+{
+  "name": "incident investigation flow",
+  "task": "Orient on INC-2107, pull evidence, fork a counterfactual, simulate the bypass, compare, and stage the result for a human — the whole demo prompt, over the HTTP projection.",
+  "steps": [
+    {
+      "capability": "incident.reset",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "ok" } }
+    },
+    {
+      "capability": "incident.snapshot",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "incident": { "id": "INC-2107", "status": "open", "applied": null },
+          "clock": "14:32"
+        }
+      }
+    },
+    {
+      "capability": "signals.query",
+      "input": { "signal": "logs:checkout-web", "windowMinutes": 30 },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": { "result": "ok", "kind": "logs", "label": "checkout-web logs" }
+      }
+    },
+    {
+      "capability": "scenario.fork",
+      "input": {
+        "name": "Bypass price cache",
+        "hypothesis": "Errors stop if cart pricing skips the new edge cache"
+      },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": { "result": "ok", "scenario": { "id": "s-1", "parent": "main", "actions": [] } }
+      }
+    },
+    {
+      "capability": "scenario.simulate",
+      "input": {
+        "scenario": "$steps[3].data.scenario.id",
+        "mitigation": "bypass_price_cache"
+      },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "assessment": { "recoveryEtaMinutes": 4, "recoveryAtClock": "14:36", "confidence": 0.86 }
+        }
+      }
+    },
+    {
+      "capability": "scenario.compare",
+      "input": { "scenarios": ["$steps[3].data.scenario.id"] },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "recommendation": { "scenarioId": "s-1", "name": "Bypass price cache" }
+        }
+      }
+    },
+    {
+      "capability": "mitigation.stage",
+      "input": {
+        "scenario": "$steps[3].data.scenario.id",
+        "rationale": "Recovers in ~4 minutes with a moderate, reversible blast radius; rollback is slower and loses the feature.",
+        "evidence": ["checkout_error_rate 14:05-14:32", "edge-cache key fragmentation warnings"]
+      },
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "staged": { "mitigation": "bypass_price_cache", "status": "staged", "stagedVia": "http" }
+        }
+      }
+    },
+    {
+      "capability": "incident.snapshot",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-incident-flow" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": { "incident": { "status": "open", "applied": null } }
+      }
+    }
+  ]
+}

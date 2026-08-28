@@ -1,0 +1,54 @@
+{
+  "name": "guardrails hold at the tool boundary",
+  "task": "Prove the contract refuses the three things an agent most plausibly gets wrong: an out-of-enum signal, mutating the observed timeline, and forking from a scenario that does not exist. Schema violations fail the envelope; domain refusals answer with a typed result an agent can act on.",
+  "steps": [
+    {
+      "capability": "incident.reset",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "ok" } }
+    },
+    {
+      "capability": "signals.query",
+      "input": { "signal": "" },
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": { "ok": false, "status": 400, "errorCode": "invalid_input" }
+    },
+    {
+      "capability": "scenario.simulate",
+      "input": { "scenario": "main", "mitigation": "bypass_price_cache" },
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "cannot_modify_main" } }
+    },
+    {
+      "capability": "scenario.fork",
+      "input": {
+        "name": "Orphan",
+        "hypothesis": "Branching from a scenario that was never created",
+        "from": "s-404"
+      },
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "unknown_parent" } }
+    },
+    {
+      "capability": "scenario.compare",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "nothing_to_compare" } }
+    },
+    {
+      "capability": "incident.snapshot",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-guardrails" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "incident": { "status": "open", "applied": null },
+          "scenarios": [{ "id": "main", "actions": [] }],
+          "staged": []
+        }
+      }
+    }
+  ]
+}

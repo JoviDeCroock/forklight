@@ -1,0 +1,76 @@
+{
+  "name": "apply is confirmation-gated",
+  "task": "Stage a mitigation, then prove the production switch refuses to run without a confirmation token and commits with one. mitigation.apply is destructive, so it has no WebMCP projection at all — this is the HTTP path a human's click takes.",
+  "steps": [
+    {
+      "capability": "incident.reset",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "ok" } }
+    },
+    {
+      "capability": "scenario.fork",
+      "input": {
+        "name": "Bypass price cache",
+        "hypothesis": "Errors stop if cart pricing skips the new edge cache"
+      },
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "ok", "scenario": { "id": "s-1" } } }
+    },
+    {
+      "capability": "scenario.simulate",
+      "input": { "scenario": "$steps[1].data.scenario.id", "mitigation": "bypass_price_cache" },
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": { "ok": true, "status": 200, "output": { "result": "ok" } }
+    },
+    {
+      "capability": "mitigation.stage",
+      "input": {
+        "scenario": "$steps[1].data.scenario.id",
+        "rationale": "Fastest recovery with a reversible, moderate blast radius.",
+        "evidence": ["checkout_error_rate 14:05-14:32"]
+      },
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": { "result": "ok", "staged": { "id": "p-2", "status": "staged" } }
+      }
+    },
+    {
+      "capability": "mitigation.apply",
+      "input": { "proposal": "$steps[3].data.staged.id" },
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": { "ok": false, "status": 409, "errorCode": "confirmation_required" }
+    },
+    {
+      "capability": "mitigation.apply",
+      "input": { "proposal": "$steps[3].data.staged.id" },
+      "confirm": "$steps[4].error.confirmationToken",
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "result": "ok",
+          "incident": { "status": "recovered" },
+          "appliedAtClock": "14:32",
+          "clockNow": "14:42"
+        }
+      }
+    },
+    {
+      "capability": "incident.snapshot",
+      "input": {},
+      "headers": { "x-forklight-session": "eval-apply-confirmation" },
+      "expect": {
+        "ok": true,
+        "status": 200,
+        "output": {
+          "incident": { "status": "recovered", "applied": { "mitigation": "bypass_price_cache" } },
+          "clock": "14:42"
+        }
+      }
+    }
+  ]
+}
