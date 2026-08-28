@@ -33,5 +33,6 @@
     "verify": "pnpm run typecheck && pnpm run test && pnpm run eval && pnpm run test:e2e"
   },
   "type": "module",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.3.0"
 }
