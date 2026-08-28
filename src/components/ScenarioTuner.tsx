@@ -113,11 +113,16 @@ export function ScenarioTuner({ focused }: { focused: Focus | null }) {
   if (!live || !focused) return null;
   return (
     <div
-      class="fixed bottom-4 left-4 z-30 flex items-center gap-2 rounded-full border border-sky-500/40 bg-zinc-900/95 px-3 py-1.5 text-xs text-sky-300 shadow-lg"
+      class="fl-pop fixed bottom-[4.75rem] left-5 z-40 flex items-center gap-2.5 rounded-full border border-sky-500/40 bg-ink-900/95 py-2 pr-4 pl-3 shadow-[0_18px_50px_-18px_rgb(56_189_248/0.65)] backdrop-blur-xl"
       data-testid="tuner-chip"
     >
-      <span class="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400" />
-      scenario_tune → {focused.name}
+      <span class="fl-live relative inline-block h-2 w-2 rounded-full bg-sky-400 text-sky-400" />
+      <span class="flex flex-col leading-none">
+        <span class="fl-eyebrow text-sky-400/80">dynamic tool bound</span>
+        <span class="mt-1 font-mono text-[12px] text-sky-200">
+          scenario_tune → {focused.name}
+        </span>
+      </span>
     </div>
   );
 }

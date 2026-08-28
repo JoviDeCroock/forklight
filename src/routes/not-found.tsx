@@ -7,15 +7,22 @@ export function head() {
 
 export function Component() {
   return (
-    <section>
-      <p style={{ color: "#555", marginBottom: "8px" }}>404</p>
-      <h1 style={{ fontSize: "2.5rem", lineHeight: 1.1, margin: "0 0 16px" }}>Page not found.</h1>
-      <p style={{ fontSize: "1.1rem", lineHeight: 1.6, marginBottom: "24px" }}>
+    <section class="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-16">
+      <p class="fl-eyebrow text-ink-500">404 · no such route</p>
+      <h1 class="mt-3 font-display text-4xl font-semibold tracking-[-0.03em] text-ink-50">
+        Nothing forked from here.
+      </h1>
+      <p class="mt-4 text-[15px] leading-relaxed text-ink-300">
         The page you asked for does not exist. It may have moved, or the link may be wrong.
       </p>
       {/* A plain anchor keeps this page independent of the route table.
           Use a typed <Link> once you want client-side navigation. */}
-      <a href="/">Back to home</a>
+      <a
+        href="/"
+        class="mt-7 inline-flex w-fit items-center gap-2 rounded-lg border border-ink-700 bg-ink-850 px-4 py-2.5 text-[13px] font-medium text-ink-100 transition-colors hover:border-ink-600 hover:bg-ink-800"
+      >
+        ← Back to the incident canvas
+      </a>
     </section>
   );
 }

@@ -1,1 +1,235 @@
 @import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Forklight design tokens.
+
+   A cool blue-black "ink" ramp rather than neutral zinc — the console should
+   read as instrumentation, not as a default dark template. Accent hues carry
+   fixed meaning across every surface:
+
+     sky     agent / WebMCP        violet  human / the switch
+     amber   deploy + staged       emerald recovery + apply
+     rose    failure / degraded
+
+   Type: one grotesque stack for prose and a tight display variant for the
+   wordmark and numbers; monospace with tabular figures for every clock, id,
+   and metric. No external font requests — the stacks resolve locally.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --font-sans:
+    "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Inter,
+    "Helvetica Neue", system-ui, sans-serif;
+  --font-display:
+    "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI",
+    Inter, "Helvetica Neue", system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas,
+    monospace;
+
+  --color-ink-950: #06070a;
+  --color-ink-925: #090b10;
+  --color-ink-900: #0d1016;
+  --color-ink-850: #11151d;
+  --color-ink-800: #171c26;
+  --color-ink-750: #1d2431;
+  --color-ink-700: #262e3d;
+  /* ink-600 and below are decorative only (borders, rules, glyphs).
+     Every step from ink-500 up clears 4.5:1 on the ink-900 panel ground:
+     500 ≈ 5.0, 400 ≈ 6.2, 300 ≈ 8.2, 200 ≈ 12.5. */
+  --color-ink-600: #566274;
+  --color-ink-500: #77849a;
+  --color-ink-400: #8794a8;
+  --color-ink-300: #9dabc0;
+  --color-ink-250: #b3bfd0;
+  --color-ink-200: #c8d2df;
+  --color-ink-100: #e2e8f0;
+  --color-ink-50: #f3f6fa;
+
+}
+
+/* Tailwind v4 only emits theme variables that a utility references, so the
+   accents used from hand-written CSS live outside @theme. */
+:root {
+  --fl-agent: #38bdf8;
+  --fl-human: #a78bfa;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #06070a;
+    color: #c8d2df;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--fl-agent) 34%, transparent);
+    color: #f3f6fa;
+  }
+
+  :focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+@layer utilities {
+  /* Ambient light behind the canvas: a cool wash from the agent side of the
+     page and a warmer violet one from the human side. */
+  .fl-ambient {
+    background-image:
+      radial-gradient(1200px 520px at 8% -10%, rgb(56 189 248 / 0.08), transparent 62%),
+      radial-gradient(1000px 460px at 96% -6%, rgb(167 139 250 / 0.055), transparent 60%);
+  }
+
+  .fl-panel {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.022), transparent 42%);
+  }
+
+  .fl-eyebrow {
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .fl-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  .fl-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #262e3d transparent;
+  }
+  .fl-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .fl-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .fl-scroll::-webkit-scrollbar-thumb {
+    background: #1d2431;
+    border-radius: 9999px;
+  }
+  .fl-scroll::-webkit-scrollbar-thumb:hover {
+    background: #262e3d;
+  }
+
+  /* The production switch: weight, an inner highlight, and a grounded shadow so
+     it reads as hardware rather than a link. */
+  .fl-switch {
+    background-image: linear-gradient(180deg, #10b981, #047857);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      0 1px 0 rgb(0 0 0 / 0.4),
+      0 8px 22px -8px rgb(16 185 129 / 0.7);
+  }
+  .fl-switch:hover:not(:disabled) {
+    background-image: linear-gradient(180deg, #14c78d, #059669);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.34),
+      0 1px 0 rgb(0 0 0 / 0.4),
+      0 10px 26px -8px rgb(16 185 129 / 0.85);
+  }
+  .fl-switch:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 2px 5px rgb(0 0 0 / 0.35),
+      0 4px 12px -8px rgb(16 185 129 / 0.6);
+  }
+
+  .fl-rise {
+    animation: fl-rise 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .fl-pop {
+    animation: fl-pop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .fl-fade {
+    animation: fl-fade 180ms ease-out both;
+  }
+  .fl-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    animation: fl-halo 2.6s ease-out infinite;
+  }
+  .fl-draw {
+    stroke-dasharray: 1400;
+    animation: fl-draw 900ms cubic-bezier(0.33, 1, 0.68, 1) both;
+  }
+}
+
+@keyframes fl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fl-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fl-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fl-halo {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0.45;
+  }
+  70% {
+    box-shadow: 0 0 0 5px currentColor;
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0;
+  }
+}
+
+@keyframes fl-draw {
+  from {
+    stroke-dashoffset: 1400;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-rise,
+  .fl-pop,
+  .fl-fade,
+  .fl-draw,
+  .fl-live::after {
+    animation: none !important;
+  }
+}

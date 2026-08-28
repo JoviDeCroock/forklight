@@ -3,7 +3,11 @@ import { publicEnv } from "@pracht/core";
 import "../styles/global.css";
 
 export function Shell({ children }: ShellProps) {
-  return <div class="min-h-screen bg-zinc-950 text-zinc-200 antialiased">{children}</div>;
+  return (
+    <div class="fl-ambient min-h-screen bg-ink-950 font-sans text-ink-200 antialiased">
+      {children}
+    </div>
+  );
 }
 
 export function head() {
