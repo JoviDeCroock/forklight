@@ -2,20 +2,34 @@ import { defineApp, route } from "@pracht/core";
 
 export const app = defineApp({
   shells: {
-    public: "./shells/public.tsx",
+    app: "./shells/app.tsx",
+  },
+  middleware: {
+    session: "./middleware/session.ts",
+  },
+  capabilities: {
+    "incident.snapshot": () => import("./capabilities/incident-snapshot.ts"),
+    "signals.query": () => import("./capabilities/signals-query.ts"),
+    "scenario.fork": () => import("./capabilities/scenario-fork.ts"),
+    "scenario.simulate": () => import("./capabilities/scenario-simulate.ts"),
+    "scenario.compare": () => import("./capabilities/scenario-compare.ts"),
+    "mitigation.stage": () => import("./capabilities/mitigation-stage.ts"),
+    "mitigation.apply": () => import("./capabilities/mitigation-apply.ts"),
+    "incident.reset": () => import("./capabilities/incident-reset.ts"),
+  },
+  agents: {
+    confirmation: { ttlSeconds: 120 },
   },
   routes: [
-    route("/", "./routes/home.tsx", { id: "home", render: "ssg", shell: "public" }),
+    route("/", "./routes/incident.tsx", {
+      id: "incident",
+      render: "ssr",
+      shell: "app",
+      middleware: ["session"],
+    }),
   ],
-  // Rendered with a 404 status when nothing matches. Not a route: it never
-  // matches a URL, so it cannot shadow static assets or later pages.
   notFound: {
     component: "./routes/not-found.tsx",
-    shell: "public",
+    shell: "app",
   },
-  // Declarative invariants enforced by `pracht verify` — uncomment to use
-  // (add the helpers to the @pracht/core import):
-  // constraints: [
-  //   requireHead("**"),
-  // ],
 });

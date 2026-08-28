@@ -10,5 +10,13 @@
     "directory": "dist/client",
     "html_handling": "drop-trailing-slash",
     "run_worker_first": true
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "forklight-db",
+      "database_id": "d4d789a5-1e7b-47d2-839a-8c4b6bb9762e",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
