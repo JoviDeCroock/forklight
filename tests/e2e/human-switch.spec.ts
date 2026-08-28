@@ -4,7 +4,7 @@ import { ledgerEntries, openCanvas, runAgentFlow } from "./helpers.ts";
 test("the agent stages, the human applies through the confirmation flow", async ({ context }) => {
   const page = await openCanvas(context);
   const clockBefore = (await page.getByTestId("clock").textContent())?.trim();
-  expect(clockBefore).toBe("now 14:32");
+  expect(clockBefore).toBe("14:32");
 
   const { proposalId } = await runAgentFlow(page);
   await expect(page.getByTestId(`proposal-${proposalId}`)).toBeVisible();
@@ -31,7 +31,7 @@ test("the agent stages, the human applies through the confirmation flow", async 
   // Applying advances the narrative clock past the lead time so recovery is
   // observed rather than only forecast.
   await expect(page.getByTestId("clock")).not.toHaveText(clockBefore!);
-  await expect(page.getByTestId("clock")).toHaveText("now 14:42");
+  await expect(page.getByTestId("clock")).toHaveText("14:42");
 
   // The ledger records who did it: the apply row is attributed to the human.
   const applyRow = ledgerEntries(page).filter({ hasText: "mitigation.apply" });

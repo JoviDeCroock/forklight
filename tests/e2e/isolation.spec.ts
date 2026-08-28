@@ -44,7 +44,7 @@ test("two visitors get two incidents, and reset only truncates one", async ({ br
   await expect(pageA.locator('[data-testid^="scenario-s-"]')).toHaveCount(0);
   await expect(ledgerEntries(pageA)).toHaveCount(0);
   await expect(pageA.getByTestId("incident-status")).toHaveText("open");
-  await expect(pageA.getByTestId("clock")).toHaveText("now 14:32");
+  await expect(pageA.getByTestId("clock")).toHaveText("14:32");
 
   // B is untouched.
   await pageB.reload();
