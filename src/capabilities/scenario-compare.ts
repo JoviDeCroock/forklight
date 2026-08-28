@@ -22,7 +22,7 @@ function rank(a: ScenarioAssessment, b: ScenarioAssessment): number {
 export default defineCapability({
   title: "Compare scenarios",
   description:
-    "Side-by-side assessment of forked scenarios: projected recovery time, orders lost per minute, blast radius, confidence, and residual risk — plus an honest recommendation with its reasoning.",
+    "Side-by-side assessment of forked scenarios: projected recovery time, requests lost per minute, blast radius, confidence, and residual risk — plus an honest recommendation with its reasoning.",
   input: {
     type: "object",
     properties: {

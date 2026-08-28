@@ -3,7 +3,7 @@ import { capabilities } from "virtual:pracht/capabilities";
 import type { CanvasData } from "../server/canvas.ts";
 
 export const DEMO_PROMPT =
-  "Checkout failures started after the 14:05 deploy. Compare rolling back against bypassing the new cache, show me the evidence, and stage the lowest-risk mitigation. Do not apply anything.";
+  "Errors spiked after the 14:05 deploy. Compare rolling back against bypassing the new cache, show me the evidence, and stage the lowest-risk mitigation. Do not apply anything.";
 
 const STATUS_STYLES: Record<string, string> = {
   open: "bg-rose-500/15 text-rose-400 border-rose-500/30",

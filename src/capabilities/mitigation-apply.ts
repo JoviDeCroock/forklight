@@ -57,7 +57,7 @@ export default defineCapability({
     // observed timeline shows the recovery (or its absence) rather than only a
     // forecast.
     state.clockMinute = appliedAt + info.leadTimeMinutes + 8;
-    const errorNow = metricAt("checkout_error_rate", state.clockMinute, [
+    const errorNow = metricAt("web_error_rate", state.clockMinute, [
       { mitigation: proposal.mitigation, atMinute: appliedAt },
     ]);
     state.incident.status = errorNow < 1 ? "recovered" : "mitigating";

@@ -23,7 +23,7 @@ Then it stops. The apply tool doesn't exist over WebMCP — the framework won't 
 ```
 The entire demo is one prompt, pasted into the browser side panel:
 
-"Checkout failures started after the 14:05 deploy. Compare rolling back against bypassing the new cache, show me the evidence, and stage the lowest-risk mitigation. Do not apply anything."
+"Errors spiked after the 14:05 deploy. Compare rolling back against bypassing the new cache, show me the evidence, and stage the lowest-risk mitigation. Do not apply anything."
 ```
 
 **3/5** — why the tool is missing
@@ -79,7 +79,7 @@ Agent prepares. Human commits. Enforced by the framework, not a prompt.
 ```
 Every discussion about agents in production stalls in the same place: nobody minds an agent reading dashboards, everybody minds an agent restarting the database. The usual answer is "don't deploy anything" in a system prompt — a wish, not a boundary.
 
-So I built Forklight for OpenAI's WebMCP Challenge, a shared incident-response canvas. An agent in the same browser tab investigates a live checkout outage, forks counterfactual timelines, compares mitigations on recovery time and blast radius, and stages the safest with its evidence. Then it stops.
+So I built Forklight for OpenAI's WebMCP Challenge, a shared incident-response canvas. An agent in the same browser tab investigates a live production outage, forks counterfactual timelines, compares mitigations on recovery time and blast radius, and stages the safest with its evidence. Then it stops.
 
 Applying to production is a button a person clicks. Not because of a prompt — the operation is classified destructive, and the framework refuses to expose destructive capabilities to browser agents. The build fails if you try.
 

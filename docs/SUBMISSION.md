@@ -12,19 +12,19 @@
 
 Every conversation about agents in production ends at the same wall. Nobody minds an agent reading dashboards. Everybody minds an agent restarting the database. The usual answer is "do not deploy anything" in a system prompt, which is not a boundary — it is a wish.
 
-Incident response is the sharpest version of it. During an outage the expensive part is not clicking the button — it is working out *which* button, on partial evidence, while orders fail. That is what an agent is good at, and what humans do worst at 3 a.m.
+Incident response is the sharpest version of it. During an outage the expensive part is not clicking the button — it is working out *which* button, on partial evidence, while requests fail. That is what an agent is good at, and what humans do worst at 3 a.m.
 
 ## What it does
 
-Forklight opens on a live checkout outage: error rate climbing since the 14:05 deploy, orders down, two alerts firing. An agent in the same tab picks up six page tools.
+Forklight opens on a live outage: error rate climbing since the 14:05 deploy, throughput down, two alerts firing. An agent in the same tab picks up six page tools.
 
-It reads the metric series and the raw logs. It forks the observed timeline into counterfactual branches — roll back the deploy, bypass the new price cache — and simulates a mitigation inside each. Dashed forecasts appear on every chart, one per branch. It compares them on recovery time, blast radius, confidence and residual risk, then stages the option it can defend, with its rationale and evidence.
+It reads the metric series and the raw logs. It forks the observed timeline into counterfactual branches — roll back the deploy, bypass the new response cache — and simulates a mitigation inside each. Dashed forecasts appear on every chart, one per branch. It compares them on recovery time, blast radius, confidence and residual risk, then stages the option it can defend, with its rationale and evidence.
 
 Then it stops. There is no apply tool.
 
 Applying is a button in the page. You click, confirm, and the mitigation lands: the clock jumps past its lead time and the charts show whether the agent was right. Every call from either side lands in one ledger, tagged **agent** or **you**.
 
-Two of the four mitigations are decoys. Scaling out does nothing — the failure is a price-consistency check, not saturation. The agent has to be right, not just decisive.
+Two of the four mitigations are decoys. Scaling out does nothing — the failure is a revision-consistency check, not saturation. The agent has to be right, not just decisive.
 
 ## How we built it
 

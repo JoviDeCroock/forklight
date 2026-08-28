@@ -1,5 +1,6 @@
 // D1-backed per-session state and the append-only activity ledger.
 import {
+  STATE_VERSION,
   seedState,
   type SessionState,
 } from "./incident.ts";
@@ -42,7 +43,14 @@ export async function loadState(db: D1Database, sessionId: string): Promise<Sess
     .prepare("SELECT state FROM sessions WHERE id = ?1")
     .bind(sessionId)
     .first<{ state: string }>();
-  if (row) return JSON.parse(row.state) as SessionState;
+  if (row) {
+    const parsed = JSON.parse(row.state) as SessionState;
+    if (parsed.version === STATE_VERSION) return parsed;
+    // The stored shape predates a catalog or schema change — reseed rather
+    // than crash on ids that no longer exist. The ledger references the old
+    // names, so it goes too.
+    return resetSession(db, sessionId);
+  }
   const state = seedState();
   await db
     .prepare("INSERT OR IGNORE INTO sessions (id, state) VALUES (?1, ?2)")

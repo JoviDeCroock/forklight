@@ -25,7 +25,7 @@ export default defineCapability({
       evidence: {
         type: "array",
         items: { type: "string", maxLength: 120 },
-        description: "Evidence references, e.g. 'checkout_error_rate 14:05–14:32' or a log line fingerprint.",
+        description: "Evidence references, e.g. 'web_error_rate 14:05–14:32' or a log line fingerprint.",
       },
     },
     required: ["scenario", "rationale"],

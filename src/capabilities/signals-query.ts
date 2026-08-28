@@ -13,14 +13,14 @@ import { openSession } from "../server/session-io.ts";
 
 interface QueryInput {
   signal:
-    | "checkout_error_rate"
-    | "checkout_p95_ms"
+    | "web_error_rate"
+    | "web_p95_ms"
     | "cache_hit_ratio"
-    | "orders_per_min"
+    | "requests_per_min"
     | "db_cpu"
-    | "logs:checkout-web"
+    | "logs:web"
     | "logs:edge-cache"
-    | "logs:checkout-api";
+    | "logs:api";
   scenario: string;
   windowMinutes: number;
 }
@@ -35,14 +35,14 @@ export default defineCapability({
       signal: {
         type: "string",
         enum: [
-          "checkout_error_rate",
-          "checkout_p95_ms",
+          "web_error_rate",
+          "web_p95_ms",
           "cache_hit_ratio",
-          "orders_per_min",
+          "requests_per_min",
           "db_cpu",
-          "logs:checkout-web",
+          "logs:web",
           "logs:edge-cache",
-          "logs:checkout-api",
+          "logs:api",
         ],
         description: "Metric id for a series, or logs:<service> for raw log lines.",
       },

@@ -128,11 +128,11 @@ export async function runAgentFlow(
   page: Page,
   options: { mitigation?: string; rationale?: string } = {},
 ): Promise<AgentRunResult> {
-  const mitigation = options.mitigation ?? "bypass_price_cache";
+  const mitigation = options.mitigation ?? "bypass_response_cache";
 
   const forked = await execTool<{ result: string; scenario: { id: string } }>(page, "scenario.fork", {
-    name: "Bypass price cache",
-    hypothesis: "Errors stop if cart pricing skips the new edge cache",
+    name: "Bypass response cache",
+    hypothesis: "Errors stop if web skips the new edge cache",
   });
   expect(forked.ok, JSON.stringify(forked.error)).toBe(true);
   expect(forked.data!.result).toBe("ok");
@@ -151,7 +151,7 @@ export async function runAgentFlow(
     {
       scenario: scenarioId,
       rationale: options.rationale ?? "Fastest recovery with a moderate, reversible blast radius.",
-      evidence: ["checkout_error_rate 14:05–14:32", "edge-cache key fragmentation warnings"],
+      evidence: ["web_error_rate 14:05–14:32", "edge-cache key fragmentation warnings"],
     },
   );
   expect(staged.ok, JSON.stringify(staged.error)).toBe(true);

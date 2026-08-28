@@ -15,7 +15,7 @@ import { openCanvas, snapshot } from "./helpers.ts";
  * `signal` into `callCapability(..., { signal })`.
  */
 const CAPABILITY_URL = "/api/capabilities/signals/query";
-const INPUT = { signal: "checkout_error_rate", windowMinutes: 30 };
+const INPUT = { signal: "web_error_rate", windowMinutes: 30 };
 
 test.describe("AbortSignal propagation", () => {
   test("an aborted capability dispatch rejects with AbortError", async ({ context }) => {

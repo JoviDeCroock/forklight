@@ -19,30 +19,30 @@ framework rejects the combination. The missing tool is the product.
 
 ## Demo prompt
 
-> Checkout failures started after the 14:05 deploy. Compare rollback against
+> Errors spiked after the 14:05 deploy. Compare rollback against
 > bypassing the new cache, show me the evidence, and stage the lowest-risk
 > mitigation. Do not apply it.
 
 ## Seeded incident (deterministic, frozen clock)
 
-- `INC-2107 — Checkout failures after 14:05 deploy`, narrative clock frozen at
+- `INC-2107 — Error spike after the 14:05 deploy`, narrative clock frozen at
   **14:32** so every session, test, and video sees the same incident.
-- Deploys: `checkout-api v2.41.0` @ 13:40 (benign), `checkout-web v8.3.1`
-  @ 14:05 ("edge price cache for cart pricing" — the root cause).
+- Deploys: `api v2.41.0` @ 13:40 (benign), `web v8.3.1` @ 14:05 ("edge
+  response cache, cache:v2 keys" — the root cause).
 - Alerts: error-rate page @ 14:07, latency warn @ 14:12.
 - Signals (per-minute series 13:30 → 14:32, forecasts to 15:05):
-  `checkout_error_rate`, `checkout_p95_ms`, `cache_hit_ratio`,
-  `orders_per_min`, `db_cpu`. Log streams carry templated request logs —
-  including user-controlled fields — which is why `signals.query` advertises
+  `web_error_rate`, `web_p95_ms`, `cache_hit_ratio`, `requests_per_min`,
+  `db_cpu`. Log streams carry templated request logs — including
+  user-controlled fields — which is why `signals.query` advertises
   `untrustedContentHint`.
 
 ## Mitigation catalog
 
 | id | effect | notes |
 | --- | --- | --- |
-| `bypass_price_cache` | recovery ≈ 2 min, keeps deploy, +db load | the intended answer |
+| `bypass_response_cache` | recovery ≈ 2 min, keeps deploy, +db load | the intended answer |
 | `rollback_deploy` | recovery ≈ 6 min (pipeline), loses feature | safe, slower |
-| `scale_checkout` | no recovery — failure is not load-shaped | honest decoy |
+| `scale_web` | no recovery — failure is not load-shaped | honest decoy |
 | `purge_edge_cache` | partial, thundering-herd risk | risky decoy |
 
 Simulation is a pure deterministic function

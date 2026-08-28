@@ -60,8 +60,8 @@ function ForkCard({
           <dd class={BLAST_STYLES[a.blastRadius?.level ?? ""] ?? "text-zinc-400"}>
             {a.blastRadius?.level ?? "—"}
           </dd>
-          <dt class="text-zinc-600">orders lost</dt>
-          <dd class="text-zinc-300">~{a.ordersLostPerMinute}/min</dd>
+          <dt class="text-zinc-600">requests lost</dt>
+          <dd class="text-zinc-300">~{a.requestsLostPerMinute}/min</dd>
         </dl>
       )}
       <span class="mt-2 block text-[10px] text-zinc-600 opacity-0 transition group-hover:opacity-100">

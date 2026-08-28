@@ -14,12 +14,12 @@ export default defineCapability({
   input: {
     type: "object",
     properties: {
-      name: { type: "string", minLength: 1, maxLength: 60, description: "Short label, e.g. 'Bypass price cache'." },
+      name: { type: "string", minLength: 1, maxLength: 60, description: "Short label, e.g. 'Bypass response cache'." },
       hypothesis: {
         type: "string",
         minLength: 1,
         maxLength: 200,
-        description: "What this timeline tests, e.g. 'Errors stop if pricing reads skip the new cache'.",
+        description: "What this timeline tests, e.g. 'Errors stop if web bypasses the new cache'.",
       },
       from: { type: "string", default: "main", maxLength: 32, description: "Parent scenario id. Default: main." },
     },

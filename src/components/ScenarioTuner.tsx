@@ -41,7 +41,7 @@ function registerTuner(): boolean {
         properties: {
           mitigation: {
             type: "string",
-            enum: ["bypass_price_cache", "rollback_deploy", "scale_checkout", "purge_edge_cache"],
+            enum: ["bypass_response_cache", "rollback_deploy", "scale_web", "purge_edge_cache"],
             description: "Mitigation to simulate in the focused scenario.",
           },
           delayMinutes: {
@@ -69,9 +69,9 @@ function registerTuner(): boolean {
         const input = (typeof rawInput === "string" ? JSON.parse(rawInput) : rawInput ?? {}) as TuneInput;
         const mitigation = input.mitigation;
         if (
-          mitigation !== "bypass_price_cache" &&
+          mitigation !== "bypass_response_cache" &&
           mitigation !== "rollback_deploy" &&
-          mitigation !== "scale_checkout" &&
+          mitigation !== "scale_web" &&
           mitigation !== "purge_edge_cache"
         ) {
           return {

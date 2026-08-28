@@ -21,11 +21,11 @@ test("the agent stages, the human applies through the confirmation flow", async 
   await page.getByTestId("confirm-commit").click();
   await expect(page.getByTestId("confirm-modal")).toHaveCount(0);
 
-  // bypass_price_cache recovers, so the incident lands on "recovered";
+  // bypass_response_cache recovers, so the incident lands on "recovered";
   // accept "mitigating" too so the assertion tracks the flow, not the model.
   await expect(page.getByTestId("incident-status")).toHaveText(/^(recovered|mitigating)$/);
   await expect(page.getByTestId("applied-card")).toBeVisible();
-  await expect(page.getByTestId("applied-card")).toContainText("Bypass the new price cache");
+  await expect(page.getByTestId("applied-card")).toContainText("Bypass the new response cache");
   await expect(page.getByTestId("applied-card")).toContainText("applied");
 
   // Applying advances the narrative clock past the lead time so recovery is

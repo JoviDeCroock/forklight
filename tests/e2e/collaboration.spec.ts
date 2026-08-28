@@ -15,15 +15,15 @@ test("an agent's tool calls move the canvas the human is looking at", async ({ c
   // successful non-read dispatch, so the loader re-reads D1 and the canvas
   // repaints while the agent works.
   await expect(page.getByTestId(`scenario-${scenarioId}`)).toBeVisible();
-  await expect(page.getByTestId(`scenario-${scenarioId}`)).toContainText("Bypass the new price cache");
+  await expect(page.getByTestId(`scenario-${scenarioId}`)).toContainText("Bypass the new response cache");
 
   // The forecast overlay for this scenario is drawn on the error-rate chart.
-  await expect(page.getByTestId(`forecast-checkout_error_rate-${scenarioId}`)).toHaveCount(1);
+  await expect(page.getByTestId(`forecast-web_error_rate-${scenarioId}`)).toHaveCount(1);
 
   const proposal = page.getByTestId(`proposal-${proposalId}`);
   await expect(proposal).toBeVisible();
   await expect(proposal).toContainText("staged via agent (WebMCP)");
-  await expect(proposal).toContainText("Bypass the new price cache");
+  await expect(proposal).toContainText("Bypass the new response cache");
   // The human-only switch is on the proposal, not on the tool surface.
   await expect(page.getByTestId(`apply-${proposalId}`)).toBeVisible();
 

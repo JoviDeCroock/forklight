@@ -16,7 +16,7 @@
     },
     {
       "capability": "scenario.simulate",
-      "input": { "scenario": "main", "mitigation": "bypass_price_cache" },
+      "input": { "scenario": "main", "mitigation": "bypass_response_cache" },
       "headers": { "x-forklight-session": "eval-guardrails" },
       "expect": { "ok": true, "status": 200, "output": { "result": "cannot_modify_main" } }
     },

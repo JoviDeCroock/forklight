@@ -18,7 +18,7 @@ export default defineCapability({
       scenario: { type: "string", maxLength: 32, description: "Forked scenario id (not main)." },
       mitigation: {
         type: "string",
-        enum: ["bypass_price_cache", "rollback_deploy", "scale_checkout", "purge_edge_cache"],
+        enum: ["bypass_response_cache", "rollback_deploy", "scale_web", "purge_edge_cache"],
         description: "Mitigation from the catalog in incident.snapshot.",
       },
       delayMinutes: {

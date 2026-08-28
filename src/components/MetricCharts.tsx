@@ -30,7 +30,7 @@ function Chart({ chart, forkIds, clockMinute }: { chart: ChartData; forkIds: str
   const xOf = (minute: number) => PAD.left + ((minute - x0) / (x1 - x0)) * (W - PAD.left - PAD.right);
   const yOf = (value: number) => PAD.top + (1 - (value - v0) / (v1 - v0)) * (H - PAD.top - PAD.bottom);
   const degraded =
-    chart.id === "cache_hit_ratio" || chart.id === "orders_per_min"
+    chart.id === "cache_hit_ratio" || chart.id === "requests_per_min"
       ? chart.now < chart.preIncident * 0.8
       : chart.now > chart.preIncident * 1.5;
 

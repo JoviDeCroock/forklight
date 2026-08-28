@@ -77,7 +77,7 @@ describe("input validation", () => {
     const { call, fake } = createHost();
     const { status, envelope } = await call("scenario.simulate", {
       scenario: "s-1",
-      mitigation: "bypass_price_cache",
+      mitigation: "bypass_response_cache",
       delayMinutes: 999,
     });
 
@@ -145,22 +145,22 @@ describe("the destructive production switch", () => {
   beforeEach(async () => {
     host = createHost();
     const forked = await host.call<{ result: string; scenario: { id: string } }>("scenario.fork", {
-      name: "Bypass price cache",
-      hypothesis: "Errors stop if cart pricing skips the new edge cache",
+      name: "Bypass response cache",
+      hypothesis: "Errors stop if web skips the new edge cache",
     });
     expect(forked.envelope.data!.result).toBe("ok");
     const scenarioId = forked.envelope.data!.scenario.id;
 
     const simulated = await host.call<{ result: string }>("scenario.simulate", {
       scenario: scenarioId,
-      mitigation: "bypass_price_cache",
+      mitigation: "bypass_response_cache",
     });
     expect(simulated.envelope.data!.result).toBe("ok");
 
     const staged = await host.call<{ result: string; staged: { id: string } }>("mitigation.stage", {
       scenario: scenarioId,
       rationale: "Fastest recovery, reversible, moderate blast radius.",
-      evidence: ["checkout_error_rate 14:05–14:32"],
+      evidence: ["web_error_rate 14:05–14:32"],
     });
     expect(staged.envelope.data!.result).toBe("ok");
     proposalId = staged.envelope.data!.staged.id;

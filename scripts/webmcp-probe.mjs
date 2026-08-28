@@ -38,8 +38,8 @@ const report = await page.evaluate(async () => {
 
   out.snapshot = await exec("incident.snapshot", {});
   out.fork = await exec("scenario.fork", {
-    name: "Bypass price cache",
-    hypothesis: "Errors stop if cart pricing skips the new cache",
+    name: "Bypass response cache",
+    hypothesis: "Errors stop if web skips the new cache",
   });
   return out;
 });

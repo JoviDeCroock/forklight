@@ -15,8 +15,8 @@ test("two visitors get two incidents, and reset only truncates one", async ({ br
 
   // A's agent forks.
   const forkedA = await execTool<{ scenario: { id: string } }>(pageA, "scenario.fork", {
-    name: "A: bypass price cache",
-    hypothesis: "Errors stop if cart pricing skips the new edge cache",
+    name: "A: bypass response cache",
+    hypothesis: "Errors stop if web skips the new edge cache",
   });
   expect(forkedA.ok, JSON.stringify(forkedA.error)).toBe(true);
   await expect(pageA.getByTestId(`scenario-${forkedA.data!.scenario.id}`)).toBeVisible();
@@ -32,7 +32,7 @@ test("two visitors get two incidents, and reset only truncates one", async ({ br
   // Give B state of its own, so A's reset has something to fail to destroy.
   const forkedB = await execTool<{ scenario: { id: string } }>(pageB, "scenario.fork", {
     name: "B: roll back the deploy",
-    hypothesis: "Errors stop if checkout-web returns to v8.3.0",
+    hypothesis: "Errors stop if web returns to v8.3.0",
   });
   expect(forkedB.ok, JSON.stringify(forkedB.error)).toBe(true);
   const scenarioB = forkedB.data!.scenario.id;

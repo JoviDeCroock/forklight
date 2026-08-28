@@ -103,23 +103,23 @@ async function agentInvestigates({ pace = 1 } = {}) {
   // simulates, compares, and stages — the canvas updates after each call.
   await exec("incident.snapshot", {});
   await sleep(1400 * pace);
-  await exec("signals.query", { signal: "logs:checkout-web" });
+  await exec("signals.query", { signal: "logs:web" });
   await sleep(1600 * pace);
-  await exec("signals.query", { signal: "checkout_error_rate" });
+  await exec("signals.query", { signal: "web_error_rate" });
   await sleep(1400 * pace);
   const fork1 = await exec("scenario.fork", {
-    name: "Bypass price cache",
-    hypothesis: "Errors stop if cart pricing skips the fragmented price:v2 cache",
+    name: "Bypass response cache",
+    hypothesis: "Errors stop if web skips the fragmented cache:v2 cache",
   });
   await sleep(2100 * pace);
   const fork2 = await exec("scenario.fork", {
     name: "Roll back v8.3.1",
-    hypothesis: "Reverting checkout-web removes the bad cache entirely",
+    hypothesis: "Reverting web removes the bad cache entirely",
   });
   await sleep(2100 * pace);
   const s1 = fork1.data.scenario.id;
   const s2 = fork2.data.scenario.id;
-  await exec("scenario.simulate", { scenario: s1, mitigation: "bypass_price_cache" });
+  await exec("scenario.simulate", { scenario: s1, mitigation: "bypass_response_cache" });
   await sleep(2600 * pace);
   await exec("scenario.simulate", { scenario: s2, mitigation: "rollback_deploy" });
   await sleep(2600 * pace);
@@ -128,10 +128,10 @@ async function agentInvestigates({ pace = 1 } = {}) {
   await exec("mitigation.stage", {
     scenario: s1,
     rationale:
-      "Fastest recovery (~2 min) at moderate, well-understood cost: origin re-takes pricing reads. Keeps v8.3.1 so the team can fix forward.",
+      "Fastest recovery (~2 min) at moderate, well-understood cost: api re-takes the read load. Keeps v8.3.1 so the team can fix forward.",
     evidence: [
-      "checkout_error_rate 14:05–14:32",
-      "PriceMismatchError cache_key=price:v2",
+      "web_error_rate 14:05–14:32",
+      "RevisionMismatchError cache_key=cache:v2",
       "edge-cache key fragmentation 1.9M keys",
     ],
   });

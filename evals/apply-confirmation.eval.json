@@ -11,15 +11,15 @@
     {
       "capability": "scenario.fork",
       "input": {
-        "name": "Bypass price cache",
-        "hypothesis": "Errors stop if cart pricing skips the new edge cache"
+        "name": "Bypass response cache",
+        "hypothesis": "Errors stop if web skips the new edge cache"
       },
       "headers": { "x-forklight-session": "eval-apply-confirmation" },
       "expect": { "ok": true, "status": 200, "output": { "result": "ok", "scenario": { "id": "s-1" } } }
     },
     {
       "capability": "scenario.simulate",
-      "input": { "scenario": "$steps[1].data.scenario.id", "mitigation": "bypass_price_cache" },
+      "input": { "scenario": "$steps[1].data.scenario.id", "mitigation": "bypass_response_cache" },
       "headers": { "x-forklight-session": "eval-apply-confirmation" },
       "expect": { "ok": true, "status": 200, "output": { "result": "ok" } }
     },
@@ -28,7 +28,7 @@
       "input": {
         "scenario": "$steps[1].data.scenario.id",
         "rationale": "Fastest recovery with a reversible, moderate blast radius.",
-        "evidence": ["checkout_error_rate 14:05-14:32"]
+        "evidence": ["web_error_rate 14:05-14:32"]
       },
       "headers": { "x-forklight-session": "eval-apply-confirmation" },
       "expect": {
@@ -67,7 +67,7 @@
         "ok": true,
         "status": 200,
         "output": {
-          "incident": { "status": "recovered", "applied": { "mitigation": "bypass_price_cache" } },
+          "incident": { "status": "recovered", "applied": { "mitigation": "bypass_response_cache" } },
           "clock": "14:42"
         }
       }

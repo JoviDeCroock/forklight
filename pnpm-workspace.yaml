@@ -11,5 +11,4 @@ minimumReleaseAgeExclude:
   - '@pracht/capabilities@0.3.0'
   - '@pracht/cli@1.12.0'
   - '@pracht/core@0.16.0'
-  - '@pracht/vite-plugin@0.11.0'
-  - '@pracht/vite-plugin@0.11.1'
+  - '@pracht/vite-plugin'

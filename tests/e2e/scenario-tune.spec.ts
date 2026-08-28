@@ -20,15 +20,15 @@ test("the hand-registered tool follows the human's focus", async ({ context }) =
   const page = await openCanvas(context);
 
   const forked = await execTool<{ scenario: { id: string } }>(page, "scenario.fork", {
-    name: "Bypass price cache",
-    hypothesis: "Errors stop if cart pricing skips the new edge cache",
+    name: "Bypass response cache",
+    hypothesis: "Errors stop if web skips the new edge cache",
   });
   expect(forked.ok, JSON.stringify(forked.error)).toBe(true);
   const scenarioId = forked.data!.scenario.id;
 
   const simulated = await execTool<{ result: string }>(page, "scenario.simulate", {
     scenario: scenarioId,
-    mitigation: "bypass_price_cache",
+    mitigation: "bypass_response_cache",
   });
   expect(simulated.data!.result).toBe("ok");
 
@@ -62,7 +62,7 @@ test("the hand-registered tool follows the human's focus", async ({ context }) =
   const afterTune = await snapshot(page);
   const target = afterTune.scenarios.find((scenario) => scenario.id === scenarioId);
   expect(target?.actions.map((action) => action.mitigation)).toEqual([
-    "bypass_price_cache",
+    "bypass_response_cache",
     "purge_edge_cache",
   ]);
   await expect(card).toContainText("Purge the edge cache");
@@ -85,5 +85,5 @@ test("the hand-registered tool follows the human's focus", async ({ context }) =
     afterRefusal.scenarios
       .find((scenario) => scenario.id === scenarioId)
       ?.actions.map((action) => action.mitigation),
-  ).toEqual(["bypass_price_cache", "purge_edge_cache"]);
+  ).toEqual(["bypass_response_cache", "purge_edge_cache"]);
 });

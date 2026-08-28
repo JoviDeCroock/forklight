@@ -23,19 +23,19 @@
     },
     {
       "capability": "signals.query",
-      "input": { "signal": "logs:checkout-web", "windowMinutes": 30 },
+      "input": { "signal": "logs:web", "windowMinutes": 30 },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
         "ok": true,
         "status": 200,
-        "output": { "result": "ok", "kind": "logs", "label": "checkout-web logs" }
+        "output": { "result": "ok", "kind": "logs", "label": "web logs" }
       }
     },
     {
       "capability": "scenario.fork",
       "input": {
-        "name": "Bypass price cache",
-        "hypothesis": "Errors stop if cart pricing skips the new edge cache"
+        "name": "Bypass response cache",
+        "hypothesis": "Errors stop if web skips the new edge cache"
       },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
@@ -48,7 +48,7 @@
       "capability": "scenario.simulate",
       "input": {
         "scenario": "$steps[3].data.scenario.id",
-        "mitigation": "bypass_price_cache"
+        "mitigation": "bypass_response_cache"
       },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
@@ -69,7 +69,7 @@
         "status": 200,
         "output": {
           "result": "ok",
-          "recommendation": { "scenarioId": "s-1", "name": "Bypass price cache" }
+          "recommendation": { "scenarioId": "s-1", "name": "Bypass response cache" }
         }
       }
     },
@@ -78,7 +78,7 @@
       "input": {
         "scenario": "$steps[3].data.scenario.id",
         "rationale": "Recovers in ~4 minutes with a moderate, reversible blast radius; rollback is slower and loses the feature.",
-        "evidence": ["checkout_error_rate 14:05-14:32", "edge-cache key fragmentation warnings"]
+        "evidence": ["web_error_rate 14:05-14:32", "edge-cache key fragmentation warnings"]
       },
       "headers": { "x-forklight-session": "eval-incident-flow" },
       "expect": {
@@ -86,7 +86,7 @@
         "status": 200,
         "output": {
           "result": "ok",
-          "staged": { "mitigation": "bypass_price_cache", "status": "staged", "stagedVia": "http" }
+          "staged": { "mitigation": "bypass_response_cache", "status": "staged", "stagedVia": "http" }
         }
       }
     },
