@@ -67,6 +67,10 @@ function niceTicks(v0: number, v1: number, count = 3): number[] {
 }
 
 function isDegraded(chart: ChartData): boolean {
+  // The error rate is judged against its SLO, not its baseline: after a
+  // recovery it sits above 0.4% but well under 1%, and painting that red
+  // would contradict the incident status the reader just saw.
+  if (chart.id === "checkout_error_rate") return chart.now >= 1;
   return chart.id === "cache_hit_ratio" || chart.id === "orders_per_min"
     ? chart.now < chart.preIncident * 0.8
     : chart.now > chart.preIncident * 1.5;
@@ -97,7 +101,7 @@ function Marks({
         y={top}
         width={Math.max(0, box.w - box.right - s.xOf(clockMinute))}
         height={bottom - top}
-        fill="#8e9bb0"
+        fill="#9dabc0"
         fill-opacity="0.035"
       />
       <line
@@ -152,7 +156,7 @@ function Marks({
             x={s.xOf(clockMinute) - 6}
             y={top + 9}
             text-anchor="end"
-            fill="#8e9bb0"
+            fill="#9dabc0"
             font-size="10"
             font-family="var(--font-mono)"
           >
@@ -162,7 +166,7 @@ function Marks({
             x={(s.xOf(clockMinute) + box.w - box.right) / 2}
             y={top + 9}
             text-anchor="middle"
-            fill="#5a6577"
+            fill="#8794a8"
             font-size="9"
             letter-spacing="1.4"
             font-family="var(--font-mono)"
@@ -249,7 +253,7 @@ function HeroChart({
               x={box.left - 8}
               y={s.yOf(tick) + 3}
               text-anchor="end"
-              fill="#5a6577"
+              fill="#8794a8"
               font-size="10"
               font-family="var(--font-mono)"
             >
@@ -324,7 +328,7 @@ function HeroChart({
         <text
           x={box.left}
           y={box.h - 7}
-          fill="#5a6577"
+          fill="#8794a8"
           font-size="10"
           font-family="var(--font-mono)"
         >
@@ -334,7 +338,7 @@ function HeroChart({
           x={box.w - box.right}
           y={box.h - 7}
           text-anchor="end"
-          fill="#5a6577"
+          fill="#8794a8"
           font-size="10"
           font-family="var(--font-mono)"
         >

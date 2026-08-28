@@ -144,10 +144,13 @@ export function ScenarioTree({
   const forkIds = forks.map((s) => s.id);
   const [forking, setForking] = useState(false);
 
+  // Only badge a winner when there is one: after an apply every fork reaches
+  // recovery at the same minute, and two "fastest" chips say nothing.
   const etas = forks
     .map((s) => s.assessment?.recoveryEtaMinutes)
     .filter((eta): eta is number => typeof eta === "number");
-  const bestEta = etas.length > 0 ? Math.min(...etas) : null;
+  const bestEta = etas.length > 1 ? Math.min(...etas) : null;
+  const bestIsUnique = bestEta !== null && etas.filter((eta) => eta === bestEta).length === 1;
 
   const forkManually = async () => {
     setForking(true);
@@ -222,9 +225,7 @@ export function ScenarioTree({
             scenario={scenario}
             color={scenarioColor(forkIds, scenario.id)}
             focused={focused === scenario.id}
-            fastest={
-              bestEta !== null && scenario.assessment?.recoveryEtaMinutes === bestEta
-            }
+            fastest={bestIsUnique && scenario.assessment?.recoveryEtaMinutes === bestEta}
             onFocus={onFocus}
           />
         ))}

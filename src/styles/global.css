@@ -34,12 +34,15 @@
   --color-ink-800: #171c26;
   --color-ink-750: #1d2431;
   --color-ink-700: #262e3d;
-  --color-ink-600: #364154;
-  --color-ink-500: #4d5a70;
-  --color-ink-400: #78869d;
-  --color-ink-300: #8e9bb0;
-  --color-ink-250: #a9b5c8;
-  --color-ink-200: #c2ccdb;
+  /* ink-600 and below are decorative only (borders, rules, glyphs).
+     Every step from ink-500 up clears 4.5:1 on the ink-900 panel ground:
+     500 ≈ 5.0, 400 ≈ 6.2, 300 ≈ 8.2, 200 ≈ 12.5. */
+  --color-ink-600: #566274;
+  --color-ink-500: #77849a;
+  --color-ink-400: #8794a8;
+  --color-ink-300: #9dabc0;
+  --color-ink-250: #b3bfd0;
+  --color-ink-200: #c8d2df;
   --color-ink-100: #e2e8f0;
   --color-ink-50: #f3f6fa;
 
