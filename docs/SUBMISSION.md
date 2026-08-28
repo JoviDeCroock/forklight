@@ -2,7 +2,7 @@
 
 **Tagline:** Rehearse the fix before shipping it. An incident canvas where the agent investigates, forks and stages — and the apply tool does not exist.
 
-**Live:** `https://forklight.example.workers.dev` *(TODO: replace with the deployed URL)*
+**Live:** `https://forklight.decroockjovi.workers.dev` *(TODO: replace with the deployed URL)*
 **Repo:** https://github.com/JoviDeCroock/forklight (MIT)
 **Video:** *(TODO: YouTube link)*
 

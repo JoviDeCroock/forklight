@@ -55,7 +55,7 @@ One typed capability per operation — schema in, schema out, declared effect. p
 
 Cloudflare Workers + D1. MIT.
 
-Live: [LIVE]
+Live: https://forklight.decroockjovi.workers.dev
 Code: [REPO]
 Framework: pracht.resynapse.dev
 ```

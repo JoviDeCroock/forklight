@@ -63,10 +63,12 @@ below 1% error), blast radius, confidence, and residual risk.
 | `incident.reset` | write | http only | back to the pristine seeded incident |
 
 Plus one **challenge-specific direct `document.modelContext.registerTool()`**:
-focusing a scenario in the UI registers `scenario_tune` (bound to the focused
-scenario, AbortController lifecycle); switching focus aborts + re-registers.
-Business logic stays in capabilities — the dynamic tool is a thin page-side wrapper
-that demonstrates spec-native dynamic tool lifecycle.
+`scenario_tune` registers once per page the first time a scenario is focused,
+and its *target* follows the human's focus from then on (a live ref; the CG
+draft removed `unregisterTool()`, and signal-based lifecycle only reaches
+Chromium 153). Unfocused, it answers a typed `no_focus` error. Business logic
+stays in capabilities — the tool is a thin page-side wrapper demonstrating
+same-tab shared context in both directions.
 
 ## State
 

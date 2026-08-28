@@ -14,7 +14,7 @@ The page has a **Copy demo prompt** button for exactly this. Paste it into an ag
 
 ## Try it
 
-**Live: `https://forklight.example.workers.dev`** — TODO: replace with the deployed URL before submitting.
+**Live: `https://forklight.decroockjovi.workers.dev`** — TODO: replace with the deployed URL before submitting.
 
 How you reach the tools depends on the browser:
 
